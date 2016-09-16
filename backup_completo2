@@ -1,0 +1,121 @@
+#!/bin/bash
+echo "Programa de backup full"
+#Autor: Rogerio Sampaio
+#Programa de criação de backup full e incremental
+#DATA: 04/02/2016
+echo " "
+
+dados() {
+
+SRCDIR="/backup" #diretórios que serão feito backup
+DSTDIR=/mnt/extra #diretório de destino do backup
+DATA=`date +%x-%k%M%S` #pega data atual
+TIME_BKCP=+15 #número de dias em que será deletado o arquivo de backup
+DOW=`date +%a`              		# Day of the week e.g. Mon
+DOM=`date +%d`              		# Date of the Month e.g. 27
+DM=`date +%d%b`             	# Date and Month e.g. 27Sep
+
+#criar o arquivo full-data.tar no diretório de destino
+ARQ=$DSTDIR/full-$DATA.tar.gz
+#data de inicio backup
+DATAIN=`date +%c`
+echo "Data de inicio: $DATAIN"
+
+}
+
+backup() {
+sync
+# Monthly full backup
+if [ $DOM = "01" ]; then
+        NEWER=""
+		tar $NEWER -czf $ARQ $SRCDIR
+
+elif [ $? -eq 0 ] ; then
+   echo "----------------------------------------" >> /var/log/backup_full.log
+        echo "Backup Full concluído com Sucesso" >> /var/log/backup_full.log
+   DATAFIN=`date +%c` >> /var/log/backup_full.log
+   echo "Data de termino: $DATAFIN" >> /var/log/backup_full.log
+   echo "Backup realizado com sucesso" >> /var/log/backup_full.log
+   echo "Criado pelo usuário: $USER" >> /var/log/backup_full.log
+   echo "INICIO: $DATAIN" >> /var/log/backup_full.log
+   echo "FIM: $DATAFIN" >> /var/log/backup_full.log
+   echo "-----------------------------------------" >> /var/log/backup_full.log
+   echo " " >> /var/log/backup_full.log
+   echo "Log gerado em /var/log/backup_full.log" >> /var/log/backup_full.log
+
+else
+   echo "ERRO! Backup do dia $DATAIN" >> /var/log/backup_full.log
+fi
+# Weekly full backup
+if [ $DOM != "01" ]; then
+if [ $DOW = "Dom" ]; then
+        NEWER=""
+        NOW=`date +%d-%b`
+
+        # Update full backup date
+        echo $NOW > $TIMEDIR/$COMPUTER-full-date
+        tar $NEWER -czf $ARQ $SRCDIR
+        
+elif [ $? -eq 0 ] ; then
+   echo "----------------------------------------" >> /var/log/backup_full.log
+        echo "Backup Full concluído com Sucesso" >> /var/log/backup_full.log
+   DATAFIN=`date +%c` >> /var/log/backup_full.log
+   echo "Data de termino: $DATAFIN" >> /var/log/backup_full.log
+   echo "Backup realizado com sucesso" >> /var/log/backup_full.log
+   echo "Criado pelo usuário: $USER" >> /var/log/backup_full.log
+   echo "INICIO: $DATAIN" >> /var/log/backup_full.log
+   echo "FIM: $DATAFIN" >> /var/log/backup_full.log
+   echo "-----------------------------------------" >> /var/log/backup_full.log
+   echo " " >> /var/log/backup_full.log
+   echo "Log gerado em /var/log/backup_full.log" >> /var/log/backup_full.log
+
+else
+   echo "ERRO! Backup do dia $DATAIN" >> /var/log/backup_full.log
+fi
+fi
+# Make incremental backup - overwrite last weeks
+
+if [ $DOM != "01" ]; then
+if [ $DOW != "Dom" ]; then
+        NEWER=""
+        NOW=`date +%d-%b`
+
+        # Get date of last full backup
+        NEWER="--newer `cat $TIMEDIR/$COMPUTER-full-date`"
+        tar $NEWER -cf $BACKUPDIR/$COMPUTER-$DOW.tar $DIRECTORIES
+	find $SRCDIR -type f -cmin $TIME_FIND -exec tar -rvf $ARQ {} ";"
+elif [ $? -eq 0 ] ; then
+   echo "----------------------------------------" >> /var/log/backup_full.log
+        echo "Backup Full concluído com Sucesso" >> /var/log/backup_full.log
+   DATAFIN=`date +%c` >> /var/log/backup_full.log
+   echo "Data de termino: $DATAFIN" >> /var/log/backup_full.log
+   echo "Backup realizado com sucesso" >> /var/log/backup_full.log
+   echo "Criado pelo usuário: $USER" >> /var/log/backup_full.log
+   echo "INICIO: $DATAIN" >> /var/log/backup_full.log
+   echo "FIM: $DATAFIN" >> /var/log/backup_full.log
+   echo "-----------------------------------------" >> /var/log/backup_full.log
+   echo " " >> /var/log/backup_full.log
+   echo "Log gerado em /var/log/backup_full.log" >> /var/log/backup_full.log
+
+else
+   echo "ERRO! Backup do dia $DATAIN" >> /var/log/backup_full.log        
+fi
+fi
+}
+
+procuraedestroifull(){
+
+#apagando arquivos mais antigos (a mais de 32 dias que existe)
+find $DSTDIR -name "f*" -ctime $TIME_BKCP -exec rm -f {} ";"
+   if [ $? -eq 0 ] ; then
+      echo "Arquivo de backup mais antigo eliminado com sucesso!"
+   else
+      echo "Erro durante a busca e destruição do backup antigo!"
+   fi
+}
+
+dados
+backup
+procuraedestroifull
+
+exit 0
