@@ -8,7 +8,7 @@ echo " "
 dados() {
 
 SRCDIR="/backup" #diretórios que serão feito backup
-DSTDIR=/mnt/extra #diretório de destino do backup
+DSTDIR="/mnt/extra" #diretório de destino do backup
 DATA=`date +%x-%k%M%S` #pega data atual
 TIME_BKCP=+15 #número de dias em que será deletado o arquivo de backup
 DOW=`date +%a`              		# Day of the week e.g. Mon
