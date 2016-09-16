@@ -1,6 +1,7 @@
 #!/bin/bash
 echo "Programa de backup full"
 #Autor: Rogerio Sampaio
+#Modificado por: Robson Vaamonde
 #Programa de criação de backup full e incremental
 #DATA: 04/02/2016
 echo " "
