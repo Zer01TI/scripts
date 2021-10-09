@@ -1,0 +1,25 @@
+Comandos utilizados nos videos :
+
+# sudo apt update
+# sudo apt upgrade
+
+# sudo vim /etc/hosts
+127.0.0.1       localhost				 localhost
+127.0.1.1       z1tsp01ml01.zer01ti.intra              z1tsp01ml01
+192.168.18.10   z1tsp01ml01.zer01ti.intra              z1tsp01ml01
+sudo vim /etc/hostname
+z1tsp01ml01
+# sudo systemctl disable systemd-resolved
+# sudo systemctl stop systemd-resolved
+# sudo rm /etc/resolv.conf
+# sudo sh -c 'echo nameserver 208.67.222.222 >> /etc/resolv.conf'
+# sudo apt install dnsmasq
+#sudo vim /etc/dnsmasq.conf
+server=192.168.18.10
+domain=zer01ti.intra
+mx-host= zer01ti.intra, mail.zer01ti.intra, 5
+listen-address=127.0.0.1
+# sudo systemctl restart dnsmasq
+# wget https://files.zimbra.com/downloads/8.8.15_GA/zcs-8.8.15_GA_3869.UBUNTU18_64.20190918004220.tgz
+# tar xfz zcs-8.8.15_GA_3869.UBUNTU18_64.20190918004220.tgz
+# cd zcs-8.8.15_GA_3869.UBUNTU18_64.20190918004220
