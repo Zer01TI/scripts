@@ -1,0 +1,37 @@
+sudo apt update && sudo apt upgrade -y
+sudo apt install apache2 mysql-server mysql-common software-properties-common php bind9
+sudo systemctl enable --now apache2 mysql
+systemctl status apache2 mysql --no-pager -l
+sudo apt install zoneminder
+
+MYSQL
+sudo rm /etc/mysql/my.cnf
+sudo cp /etc/mysql/mysql.conf.d/mysqld.cnf /etc/mysql/my.cnf
+sudo vim /etc/mysql/my.cnf
+sql_mode = NO_ENGINE_SUBSTITUTION
+
+Apache Permissões
+sudo chmod 740 /etc/zm/zm.conf
+sudo chown root:www-data /etc/zm/zm.conf
+sudo chown -R www-data:www-data /usr/share/zoneminder/
+sudo a2enmod cgi rewrite expires headers
+sudo a2enconf zoneminder
+
+sudo mysql -uroot -p < /usr/share/zoneminder/db/zm_create.sql
+sudo mysql
+CREATE USER 'zmuser'@localhost IDENTIFIED WITH mysql_native_password BY 'zmpass';
+GRANT ALL PRIVILEGES ON zm.* TO 'zmuser'@'localhost' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+quit;
+sudo mysqladmin -uroot -p reload
+
+PHP.ini
+sudo vim /etc/php/*/apache2/php.ini
+date.timezone = America/Sao_Paulo
+zlib.output_compression = Off
+
+sudo systemctl enable zoneminder
+sudo systemctl start zoneminder
+sudo systemctl reload apache2
+
+http://192.168.15.20/zm
